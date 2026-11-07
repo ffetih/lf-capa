@@ -11,8 +11,10 @@ $context = Join-Path $PSScriptRoot "..\docs\dev-guide"
 podman build -t $image -f "$context\Containerfile" $context
 if ($LASTEXITCODE -ne 0) { throw "build failed" }
 
+# Host network, not -p: rootful Podman on WSL only reaches Windows when a process really
+# listens in the VM (see the troubleshooting chapter). nginx listens on 8088 itself.
 podman rm -f dev-guide 2>$null | Out-Null
-podman run -d --name dev-guide -p 8088:8080 $image
+podman run -d --name dev-guide --network host $image
 Write-Host "Guide: http://localhost:8088   (stop: podman rm -f dev-guide)"
 
 if ($LoadIntoKind) {
