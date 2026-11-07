@@ -1,0 +1,45 @@
+== Repository conventions
+
+=== Layout
+
+[source,text]
+----
+services/
+  payment-api/        REST service: authorize / capture / refund, exposes metrics
+  settlement-job/     one image, several steps (--step=fetch|ledger|match|report|alert)
+gitops/
+  bootstrap/          root Application (app-of-apps) — the only thing applied by hand
+  apps/               child Applications + ApplicationSet (dev, prod)
+  platform/           Argo Workflows, Events, Rollouts, MinIO, Prometheus, Postgres
+  charts/payment-api/ Helm chart whose workload is a Rollout
+  workflows/          WorkflowTemplates, CronWorkflow
+  events/             EventBus, EventSource, Sensor
+docs/dev-guide/       this guide (AsciiDoc) + its container image
+local/                kind config and setup scripts (PowerShell)
+----
+
+NOTE: One repo holds both code and manifests to keep the lab simple. In real GitOps you
+usually split the *app repo* (code; CI builds images) from the *config repo* (what Argo CD
+watches). Know that distinction for the exam.
+
+=== Commits
+
+* Author: `fateh <fateh@githubnousermail>` (set in the repo's local git config).
+* Short subject line, imperative: `Phase 1: add payment-api Application`.
+* One step of <<phases>> = one commit.
+* No AI attribution, no `Co-Authored-By` or similar trailers.
+
+=== Naming
+
+[cols="1,2",options="header"]
+|===
+|Thing |Convention
+|Namespaces |`argocd`, `argo`, `argo-events`, `argo-rollouts`, `platform`, `settlement-dev`, `settlement-prod`
+|Images |`localhost/settlement/<service>:<semver>` (loaded into kind, never `latest`)
+|Argo CD apps |`<component>-<env>`, e.g. `payment-api-dev`
+|Java packages |`dev.siose.settlement.<context>`
+|===
+
+=== Line endings
+
+`.gitattributes` forces LF everywhere except `*.ps1` / `*.cmd` (CRLF). Don't fight it.

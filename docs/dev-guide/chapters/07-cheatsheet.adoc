@@ -1,0 +1,55 @@
+== Cheat sheet
+
+=== Argo CD
+
+[source,powershell]
+----
+argocd login localhost:30443 --username admin --insecure
+argocd app list
+argocd app get <app>
+argocd app diff <app>
+argocd app sync <app>
+argocd app history <app>
+argocd app rollback <app> <history-id>
+argocd app set <app> --sync-policy automated --self-heal --auto-prune
+----
+
+=== Argo Rollouts
+
+[source,powershell]
+----
+kubectl argo rollouts get rollout <name> -n <ns> --watch
+kubectl argo rollouts promote <name> -n <ns>
+kubectl argo rollouts abort <name> -n <ns>
+kubectl argo rollouts retry rollout <name> -n <ns>
+kubectl get analysisrun -n <ns>
+----
+
+=== Argo Workflows
+
+[source,powershell]
+----
+argo submit --from workflowtemplate/settlement -p businessDate=2026-11-06 -n argo --watch
+argo list -n argo
+argo get @latest -n argo
+argo logs @latest -n argo
+argo retry @latest -n argo
+argo cron list -n argo
+----
+
+=== Argo Events
+
+[source,powershell]
+----
+kubectl get eventbus,eventsources,sensors -n argo-events
+kubectl logs -n argo-events -l sensor-name=<sensor>
+----
+
+=== Images into kind (no registry)
+
+[source,powershell]
+----
+podman build -t localhost/settlement/<svc>:0.1.0 .
+podman save localhost/settlement/<svc>:0.1.0 -o <svc>.tar
+kind load image-archive <svc>.tar --name capa
+----

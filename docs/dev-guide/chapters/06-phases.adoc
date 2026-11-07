@@ -1,0 +1,101 @@
+[[phases]]
+== Build phases
+
+Each phase lists what to build, which course module to watch first, how to verify,
+and the questions the exam will ask. Course keys:
+
+* *KC* — KodeKloud _Certified Argo Project Associate (CAPA)_ (strong on Workflows)
+* *OR* — O'Reilly _GitOps in Practice with Argo CD and Argo Rollouts_ (LM Academy)
+* *Docs* — argoproj.github.io (needed for Argo Events)
+
+Argo CD comes first because it deploys everything else.
+
+=== Phase 0 — Local cluster
+
+Build:: kind cluster on Podman, Argo CD installed by hand.
+Watch:: KC _installation and setup_; OR setup section.
+Done when:: see the checklist in the setup chapter.
+Explain it:: why the first install is manual (the bootstrap problem).
+
+=== Phase 1 — First Argo CD applications (Argo CD, 34%)
+
+. *1a — this guide as the first app.* Deploy the `dev-guide` image (static nginx) with a
+  plain `Application`. Simplest possible thing: no database, no Helm.
+. *1b — payment-api.* Spring Boot service, image, Helm chart (a `Deployment` for now), `Application`.
+
+Watch:: OR GitOps principles + Argo CD sections; KC _argo cd basics_, _gitops with argo_.
+Verify::
++
+[source,powershell]
+----
+argocd app list
+argocd app get dev-guide
+kubectl -n settlement-dev get pods
+----
+Explain it::
+* the four GitOps principles: declarative, versioned and immutable, pulled automatically, continuously reconciled
+* `Application` spec: `source`, `destination`, `project`, `syncPolicy`
+* sync status (`Synced`/`OutOfSync`) vs health status (`Healthy`, `Progressing`, `Degraded`, `Missing`, `Suspended`)
+* auto-sync, prune, self-heal; refresh vs hard refresh
+* components: api-server, repo-server, application-controller, redis, dex, applicationset-controller
+
+=== Phase 2 — Platform as code (Argo CD)
+
+Build:: root app-of-apps, `ApplicationSet` for dev/prod, sync waves, `PostSync` smoke test, `AppProject`.
+Watch:: OR multi-environment and Helm syncing sections.
+Explain it::
+* app-of-apps vs `ApplicationSet`; generators (list, cluster, git, matrix)
+* sync waves and hooks (`PreSync`, `Sync`, `PostSync`, `SyncFail`)
+* `AppProject` restrictions, RBAC basics
+* Argo CD renders Helm templates itself; it does not run `helm install`
+
+=== Phase 3 — Progressive delivery (Argo Rollouts, 18%)
+
+Build:: replace the `Deployment` with a `Rollout`, canary + `AnalysisTemplate` on Prometheus,
+release a bad version (`FAULT_RATE=0.3`), watch it roll back; then try blue-green.
+Watch:: OR Blue-Green and Canary sections.
+Verify:: `kubectl argo rollouts get rollout payment-api -n settlement-dev --watch`
+Explain it::
+* canary vs blue-green; steps `setWeight`, `pause`, `analysis`
+* `AnalysisTemplate` vs `AnalysisRun` vs `Experiment`; background vs inline analysis
+* traffic routing providers (NGINX, Istio, ALB, SMI)
+* `promote`, `abort`, `retry`
+
+=== Phase 4 — The settlement workflow (Argo Workflows, 36% — biggest)
+
+One commit per step:
+
+[cols="1,3,2",options="header"]
+|===
+|Step |Build |KC module
+|4.1 |one-step workflow running `settlement-job --step=fetch` |_argo workflows architecture_
+|4.2 |move it into a `WorkflowTemplate` |_workflow templates_
+|4.3 |parameters and MinIO artifacts between steps |_parameters and artifacts_
+|4.4 |full DAG with `withParam` fan-out and `when` |_dags in workflows_
+|4.5 |exit handler; follow phases in UI and CLI |_workflow execution and lifecycle_
+|4.6 |`retryStrategy` on the flaky ledger step |_error handling and retries_
+|4.7 |`CronWorkflow` for the nightly run |—
+|===
+
+Verify:: `argo list -n argo`, `argo get @latest -n argo`, `argo logs @latest -n argo`
+Explain it::
+* template types: container, script, resource, suspend, steps, dag
+* `Workflow` vs `WorkflowTemplate` vs `ClusterWorkflowTemplate` vs `CronWorkflow`; `templateRef`
+* artifact repository config; input/output parameters and artifacts
+* steps vs DAG; `retryStrategy` (`limit`, `retryPolicy`, `backoff`); `onExit`
+* workflow-controller and argo-server; service accounts for workflow pods
+
+=== Phase 5 — Event-driven start (Argo Events, 12%)
+
+Build:: `EventBus` (JetStream), MinIO `EventSource`, `Sensor` submitting the template with `fileKey`.
+Upload a bank file and a workflow starts.
+Watch:: Docs (neither course covers Events in depth).
+Explain it::
+* EventSource -> EventBus -> Sensor -> Trigger
+* dependencies and filters; trigger types (Argo Workflow, Kubernetes resource, HTTP)
+* passing event data into trigger parameters
+
+=== Phase 6 — Exam mode
+
+* Finish both courses' quizzes, then 2–3 timed practice exams (90 min, 60 questions, 75% to pass).
+* Re-read the weakest domain. Workflows + Argo CD = 70% of the score.

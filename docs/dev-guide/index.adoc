@@ -1,0 +1,35 @@
+= Settlement Lab — Developer Guide
+:description: How to build, run and study the CAPA settlement lab, step by step.
+:toc: left
+:toclevels: 2
+:sectnums:
+:sectanchors:
+:icons: font
+:source-highlighter: highlight.js
+:experimental:
+:docinfo: shared
+:argocd-version: v3.5.6
+:boot-version: 4.1.x
+:java-version: 25
+
+[.lead]
+A small payment-settlement system whose real purpose is to exercise all four Argo projects
+for the *Certified Argo Project Associate (CAPA)* exam. The Java stays small; the learning
+lives in the GitOps manifests.
+
+include::chapters/01-overview.adoc[]
+
+include::chapters/02-setup.adoc[]
+
+include::chapters/03-dev-loop.adoc[]
+
+include::chapters/04-conventions.adoc[]
+
+include::chapters/05-domain.adoc[]
+
+include::chapters/06-phases.adoc[]
+
+include::chapters/07-cheatsheet.adoc[]
+
+include::chapters/08-troubleshooting.adoc[]
+

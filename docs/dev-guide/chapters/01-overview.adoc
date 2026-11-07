@@ -1,0 +1,40 @@
+== Overview
+
+=== The one-minute mental model
+
+payment-api is the *cash register*: it takes card payments all day.
+Every night the bank drops its *statement* (the settlement file).
+The settlement workflow is the *accountant* who ticks every line of the statement against
+our ledger, merchant by merchant, and raises a flag when something does not match.
+
+Each Argo project has one clear job in that story:
+
+[cols="1,1,3",options="header"]
+|===
+|Argo project |Exam weight |Its job in this lab
+|Argo Workflows |36% |Runs the nightly reconciliation as a DAG
+|Argo CD        |34% |Deploys everything from Git (app-of-apps, dev and prod)
+|Argo Rollouts  |18% |Releases payment-api as a canary, rolls back bad versions
+|Argo Events    |12% |Starts the workflow when the bank file lands in MinIO
+|===
+
+=== Architecture
+
+[source,mermaid]
+----
+flowchart TB
+  dev([You]) -->|git push| git[(Git repo)]
+  git -->|watched by| cd[Argo CD]
+  subgraph cluster[kind cluster]
+    cd -->|syncs| api[payment-api<br/>Rollout]
+    cd -->|syncs| wft[WorkflowTemplate<br/>settlement]
+    cd -->|syncs| evt[EventSource + Sensor]
+    minio[(MinIO)] -->|file created| evt
+    evt -->|submits| wf[Workflow run]
+    wft -.->|template for| wf
+    wf -->|GET ledger| api
+    prom[(Prometheus)] -->|analysis| api
+  end
+----
+
+TIP: If the diagram does not render, you are offline: it is drawn in the browser by mermaid.js.

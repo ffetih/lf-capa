@@ -1,0 +1,46 @@
+== How to work: the two loops
+
+The single most important habit change in GitOps:
+*you never `kubectl apply` your application. You change Git, and Argo CD changes the cluster.*
+
+Think of it as two loops.
+
+[source,mermaid]
+----
+flowchart LR
+  subgraph inner[Inner loop — seconds, on your laptop]
+    code[Edit code] --> test[mvn test] --> run[mvn spring-boot:run] --> code
+  end
+  subgraph outer[Outer loop — minutes, through Git]
+    img[Build image] --> load[Load into kind] --> bump[Bump tag in gitops/] --> push[git commit + push] --> sync[Argo CD syncs] --> watch[Watch rollout / workflow]
+  end
+  run -->|feature works| img
+----
+
+=== Inner loop (fast feedback)
+
+Plain Spring Boot development, no Kubernetes involved:
+
+[source,powershell]
+----
+cd services\payment-api
+.\mvnw test
+.\mvnw spring-boot:run      # http://localhost:8080
+----
+
+=== Outer loop (the part the exam is about)
+
+. Build the image and load it into kind (no registry needed locally).
+. Change the image tag or values under `gitops/` — *this is the deployment*.
+. Commit and push.
+. Watch Argo CD notice the change: `OutOfSync` -> sync -> `Synced` / `Healthy`.
+
+WARNING: If you fix something with `kubectl edit` in the cluster, Argo CD will report
+*OutOfSync* and, with `selfHeal: true`, put it back. That is GitOps working, not a bug.
+Fix it in Git instead.
+
+=== One step, one commit
+
+Every step in <<phases>> ends with a commit. If a step breaks the cluster you can always
+go back with `git revert` and let Argo CD sync the old state — that is the *rollback* story
+of GitOps in one sentence.

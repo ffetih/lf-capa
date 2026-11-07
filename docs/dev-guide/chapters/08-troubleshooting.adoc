@@ -1,0 +1,22 @@
+== Troubleshooting
+
+kind cannot create the cluster::
+The Podman machine is rootless. Run `local/01-podman-rootful.ps1`, then check with
+`podman info --format "{{.Host.Security.Rootless}}"` (must be `false`).
+
+https://localhost:30443 does not open::
+Rootful Podman on WSL has broken port publishing on this machine before.
+Try `kubectl -n argocd port-forward svc/argocd-server 8080:443` and open https://localhost:8080.
+
+`kubectl` cannot reach the API server::
+Check `podman port capa-control-plane`. Worst case run the CLIs inside the machine:
+`wsl -d podman-machine-default`.
+
+Pod stuck in `ErrImagePull` / `ImagePullBackOff`::
+The image was not loaded into kind, or the tag in `gitops/` does not match.
+Run `kind load image-archive` again and compare tags. Never use `latest`:
+Kubernetes then defaults `imagePullPolicy` to `Always` and tries a registry.
+
+App is `OutOfSync` right after a sync::
+Something in the cluster mutates a field (defaults, controllers). Look at `argocd app diff`;
+if it is expected, add an `ignoreDifferences` entry rather than fighting it.

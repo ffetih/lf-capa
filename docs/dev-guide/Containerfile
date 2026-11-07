@@ -1,0 +1,10 @@
+# Stage 1: render AsciiDoc -> HTML
+FROM docker.io/asciidoctor/docker-asciidoctor:latest AS build
+WORKDIR /documents
+COPY . .
+RUN asciidoctor --failure-level WARN -D /out index.adoc
+
+# Stage 2: serve it with a non-root nginx (listens on 8080)
+FROM docker.io/nginxinc/nginx-unprivileged:stable-alpine
+COPY --from=build /out/ /usr/share/nginx/html/
+EXPOSE 8080

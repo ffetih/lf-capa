@@ -1,0 +1,41 @@
+== Workstation setup
+
+=== Tools
+
+[cols="1,1,2",options="header"]
+|===
+|Tool |Version |Notes
+|JDK |{java-version} (LTS) |`C:\Java\jdk-25.0.5.0.3`, set by `local/env.ps1`
+|Spring Boot |{boot-version} |move to 4.2 when it goes GA
+|Podman Desktop |current |machine must be *rootful* for kind on WSL
+|kind |0.32+ |`winget install Kubernetes.kind`
+|kubectl |matching the cluster |`winget install Kubernetes.kubectl`
+|argocd CLI |{argocd-version} |GitHub release page of argoproj/argo-cd
+|argo CLI |later, Phase 4 |Argo Workflows
+|kubectl-argo-rollouts |later, Phase 3 |Rollouts plugin
+|IntelliJ IDEA |any recent |open the repo root; `.idea/` is git-ignored
+|===
+
+=== First-time setup
+
+Every new PowerShell session starts with:
+
+[source,powershell]
+----
+cd D:\dev\claude\LF\lf-capa
+. .\local\env.ps1          # JAVA_HOME, kind provider, versions
+----
+
+Then, once:
+
+[source,powershell]
+----
+.\local\01-podman-rootful.ps1   # rootful machine, 4 CPU / 8 GB
+.\local\02-create-cluster.ps1   # kind cluster "capa"
+.\local\03-install-argocd.ps1   # Argo CD, prints the admin password
+----
+
+.Done when
+* [ ] `kubectl get nodes` shows one `Ready` node
+* [ ] `kubectl get pods -n argocd` shows every pod `Running`
+* [ ] https://localhost:30443 opens the Argo CD login page
