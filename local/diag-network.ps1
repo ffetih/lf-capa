@@ -4,7 +4,10 @@
 $ErrorActionPreference = "Continue"
 
 function Section($t) { Write-Host "`n== $t" -ForegroundColor Cyan }
-function TcpOk($port) { (Test-NetConnection 127.0.0.1 -Port $port -WarningAction SilentlyContinue).TcpTestSucceeded }
+function TcpOk($port, $hostName = "127.0.0.1") {
+  $c = New-Object System.Net.Sockets.TcpClient
+  try { return $c.ConnectAsync($hostName, [int]$port).Wait(2000) -and $c.Connected } catch { return $false } finally { $c.Dispose() }
+}
 
 Section "Podman connections / machine"
 podman system connection list
@@ -28,11 +31,16 @@ Section "WSL config"
 Get-Content "$env:USERPROFILE\.wslconfig" -ErrorAction SilentlyContinue
 wsl --version
 
-Section "Experiment: which binding reaches Windows?"
-podman rm -f probe-lo probe-any 2>$null | Out-Null
-podman run -d --name probe-lo  -p 127.0.0.1:18080:80 docker.io/library/nginx:alpine | Out-Null
-podman run -d --name probe-any -p 18081:80           docker.io/library/nginx:alpine | Out-Null
+Section "Experiment: which path reaches Windows?"
+$vmIp = (podman machine ssh "ip -4 -o addr show eth0" | Select-String -Pattern 'inet (\d+\.\d+\.\d+\.\d+)').Matches[0].Groups[1].Value
+Write-Host "VM eth0 IP: $vmIp"
+podman rm -f probe-any probe-host 2>$null | Out-Null
+podman run -d --name probe-any  -p 18081:80 docker.io/library/nginx:alpine | Out-Null
+podman run -d --name probe-host --network host docker.io/library/busybox httpd -f -p 0.0.0.0:18082 | Out-Null
 Start-Sleep -Seconds 5
-Write-Host "published on 127.0.0.1 (18080) -> $(TcpOk 18080)"
-Write-Host "published on 0.0.0.0   (18081) -> $(TcpOk 18081)"
-podman rm -f probe-lo probe-any | Out-Null
+podman machine ssh "ss -ltnp | grep -E ':1808[12] ' || echo '(no listening sockets for 18081/18082)'"
+Write-Host "A) published port via 127.0.0.1:18081 -> $(TcpOk 18081)"
+Write-Host "B) published port via $($vmIp):18081   -> $(TcpOk 18081 $vmIp)"
+Write-Host "C) real listener  via 127.0.0.1:18082 -> $(TcpOk 18082)"
+Write-Host "D) kind API       via $($vmIp):$api    -> $(TcpOk $api $vmIp)"
+podman rm -f probe-any probe-host | Out-Null
