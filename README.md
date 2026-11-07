@@ -14,7 +14,7 @@ Certified Argo Project Associate (CAPA) exam. The Java stays small; the learning
 | Exam domain    | Weight | Where in this repo |
 |----------------|--------|--------------------|
 | Argo Workflows | 36%    | `gitops/workflows/` |
-| Argo CD        | 34%    | `gitops/bootstrap/`, `gitops/apps/` |
+| Argo CD        | 34%    | `gitops/bootstrap/`, `gitops/apps/`, `gitops/manifests/` |
 | Argo Rollouts  | 18%    | `gitops/charts/payment-api/` |
 | Argo Events    | 12%    | `gitops/events/` |
 

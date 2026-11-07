@@ -21,6 +21,18 @@ Explain it:: why the first install is manual (the bootstrap problem).
 
 . *1a — this guide as the first app.* Deploy the `dev-guide` image (static nginx) with a
   plain `Application`. Simplest possible thing: no database, no Helm.
++
+[source,powershell]
+----
+.\local\04-dev-guide.ps1 -LoadIntoKind      # build image 0.1.0, load it into kind
+.\local\bridge.ps1                          # once, so 30088 is forwarded
+kubectl apply -f gitops/apps/dev-guide.yaml  # register the Application
+----
++
+In the UI: `dev-guide` shows *OutOfSync* / *Missing* -> press *SYNC* -> *Synced* / *Healthy*.
+Open http://localhost:30088 — the guide, now served by the cluster.
+Then try GitOps: change `replicas: 2` in `gitops/manifests/dev-guide/deployment.yaml`,
+push, press *REFRESH*, see *OutOfSync*, sync again.
 . *1b — payment-api.* Spring Boot service, image, Helm chart (a `Deployment` for now), `Application`.
 
 Watch:: OR GitOps principles + Argo CD sections; KC _argo cd basics_, _gitops with argo_.

@@ -15,7 +15,7 @@ Run `.\local\bridge.ps1` (always needed after a Podman machine or Windows restar
 Why: with a *rootful* Podman machine on WSL, published ports are kernel redirect rules with no
 listening process, and WSL's localhost relay only forwards ports where a process is really
 listening. `bridge.ps1` starts the `capa-bridge` socat container on the VM's host network, which
-*is* a real listener, and forwards 6443 / 30443 / 30080 / 30746 to the kind node.
+*is* a real listener, and forwards 6443 / 30443 / 30080 / 30088 / 30746 to the kind node.
 +
 [source,text]
 ----

@@ -3,7 +3,7 @@
 # No extraPortMappings on purpose: with a ROOTFUL Podman machine on WSL, published ports are
 # kernel redirect rules with no listening process, and WSL only relays ports that have a real
 # listener. local/bridge.ps1 runs a socat container on the VM's host network instead, which
-# listens on 6443 / 30443 / 30080 / 30746 and forwards to the kind node.
+# listens on 6443 / 30443 / 30080 / 30088 / 30746 and forwards to the kind node.
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 name: capa

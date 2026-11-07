@@ -4,7 +4,7 @@
 #   Windows 127.0.0.1:PORT --(WSL relay)--> socat in VM (real listener) --> kind node IP:PORT
 #
 . "$PSScriptRoot\env.ps1"
-$ports = 6443, 30443, 30080, 30746     # API server, Argo CD UI, payment-api, Argo Workflows UI
+$ports = 6443, 30443, 30080, 30088, 30746   # API, Argo CD UI, payment-api, dev-guide, Argo Workflows UI
 $node  = "$env:CLUSTER_NAME-control-plane"
 
 $nodeIp = podman inspect $node --format "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}"

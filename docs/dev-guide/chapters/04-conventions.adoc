@@ -9,7 +9,8 @@ services/
   settlement-job/     one image, several steps (--step=fetch|ledger|match|report|alert)
 gitops/
   bootstrap/          root Application (app-of-apps) — the only thing applied by hand
-  apps/               child Applications + ApplicationSet (dev, prod)
+  apps/               Application manifests (child apps, ApplicationSet)
+  manifests/          plain YAML workloads, e.g. manifests/dev-guide/
   platform/           Argo Workflows, Events, Rollouts, MinIO, Prometheus, Postgres
   charts/payment-api/ Helm chart whose workload is a Rollout
   workflows/          WorkflowTemplates, CronWorkflow

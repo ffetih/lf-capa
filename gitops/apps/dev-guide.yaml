@@ -1,0 +1,21 @@
+# Phase 1a: the first Argo CD Application. Applied by hand for now:
+#   kubectl apply -f gitops/apps/dev-guide.yaml
+# In Phase 2 the root app-of-apps takes over and this file is applied by Argo CD itself.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: dev-guide
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/ffetih/lf-capa.git
+    targetRevision: main
+    path: gitops/manifests/dev-guide       # plain YAML directory, no Helm/Kustomize
+  destination:
+    server: https://kubernetes.default.svc # the cluster Argo CD runs in
+    namespace: dev-guide
+  syncPolicy:
+    # No "automated" yet: you will press SYNC yourself and watch OutOfSync -> Synced.
+    syncOptions:
+      - CreateNamespace=true

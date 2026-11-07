@@ -22,7 +22,7 @@ argocd version
 ## How Windows reaches the cluster (and after a reboot)
 Rootful Podman on WSL publishes ports as kernel redirect rules with no listening process, and
 WSL only relays ports where something is really listening. `bridge.ps1` runs a small socat
-container (`capa-bridge`) on the VM's host network that listens on 6443 / 30443 / 30080 / 30746
+container (`capa-bridge`) on the VM's host network that listens on 6443 / 30443 / 30080 / 30088 / 30746
 and forwards to the kind node.
 
 ```
