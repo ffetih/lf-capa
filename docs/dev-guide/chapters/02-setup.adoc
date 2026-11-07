@@ -38,6 +38,7 @@ Then, once:
 ----
 
 After a reboot (Windows or Podman machine), run `.\local\bridge.ps1` once.
+Whenever something looks wrong: `.\local\status.ps1` -- one green/red line per component, with the fix.
 
 .Done when
 * [ ] `kubectl get nodes` shows one `Ready` node

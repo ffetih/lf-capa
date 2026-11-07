@@ -30,6 +30,7 @@ Windows 127.0.0.1:6443 --(WSL relay)--> capa-bridge (socat) --> kind node :6443
 ```
 
 After restarting the Podman machine or Windows: `.\local\bridge.ps1`.
+Whenever something looks wrong: `.\local\status.ps1`.
 If something still fails: `.\local\diag-network.ps1` and look at lines A-D.
 
 ## Why Argo CD is installed by hand here
