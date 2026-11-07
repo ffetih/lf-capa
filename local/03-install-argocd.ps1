@@ -14,4 +14,10 @@ if ($type -ne "NodePort") { throw "argocd-server is still $type - patch failed" 
 $b64 = kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}"
 $adminPass = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($b64))
 Write-Host "Argo CD UI : https://localhost:30443   user: admin   password: $adminPass"
-Write-Host "Fallback   : kubectl -n argocd port-forward svc/argocd-server 8080:443  ->  https://localhost:8080"
+
+$c = New-Object System.Net.Sockets.TcpClient
+$ok = try { $c.ConnectAsync("127.0.0.1", 30443).Wait(2000) -and $c.Connected } catch { $false } finally { $c.Dispose() }
+if (-not $ok) {
+  Write-Host "30443 not reachable - run .\local\bridge.ps1, or use a temporary tunnel (keeps the terminal busy):" -ForegroundColor Yellow
+  Write-Host "  kubectl -n argocd port-forward svc/argocd-server 8080:443   ->  https://localhost:8080"
+}
