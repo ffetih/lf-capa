@@ -5,7 +5,7 @@ Run in PowerShell from the repo root (if scripts are blocked:
 
 | Step | Script                    | What it does |
 |------|---------------------------|--------------|
-| 1    | `01-podman-rootful.ps1`   | switch the Podman machine to rootful, 4 CPU / 8 GB |
+| 1    | `01-podman-rootful.ps1`   | switch the Podman machine to rootful (CPU/RAM come from WSL) |
 | 2    | `02-create-cluster.ps1`   | kind cluster `capa` (one node, ports 30443/30080/30746) |
 | 3    | `03-install-argocd.ps1`   | Argo CD v3.5.6, UI on https://localhost:30443, prints admin password |
 

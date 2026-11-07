@@ -20,3 +20,8 @@ Kubernetes then defaults `imagePullPolicy` to `Always` and tries a registry.
 App is `OutOfSync` right after a sync::
 Something in the cluster mutates a field (defaults, controllers). Look at `argocd app diff`;
 if it is expected, add an `ignoreDifferences` entry rather than fighting it.
+
+Machine needs more (or less) CPU / memory::
+On WSL, Podman cannot size the machine (`--cpus`/`--memory` are QEMU-only). Edit
+`%UserProfile%\.wslconfig` (`[wsl2]` section, `memory=` / `processors=`), then `wsl --shutdown`
+and `podman machine start`.

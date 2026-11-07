@@ -7,7 +7,7 @@
 |Tool |Version |Notes
 |JDK |{java-version} (LTS) |`C:\Java\jdk-25.0.5.0.3`, set by `local/env.ps1`
 |Spring Boot |{boot-version} |move to 4.2 when it goes GA
-|Podman Desktop |current |machine must be *rootful* for kind on WSL
+|Podman |6.x |WSL machine, must be *rootful* for kind (CPU/RAM come from WSL, not Podman)
 |kind |0.32+ |`winget install Kubernetes.kind`
 |kubectl |matching the cluster |`winget install Kubernetes.kubectl`
 |argocd CLI |{argocd-version} |GitHub release page of argoproj/argo-cd
@@ -30,7 +30,7 @@ Then, once:
 
 [source,powershell]
 ----
-.\local\01-podman-rootful.ps1   # rootful machine, 4 CPU / 8 GB
+.\local\01-podman-rootful.ps1   # rootful machine + tool check
 .\local\02-create-cluster.ps1   # kind cluster "capa"
 .\local\03-install-argocd.ps1   # Argo CD, prints the admin password
 ----
