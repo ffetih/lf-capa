@@ -8,9 +8,9 @@
 |JDK |{java-version} (LTS) |`C:\Java\jdk-25.0.5.0.3`, set by `local/env.ps1`
 |Spring Boot |{boot-version} |move to 4.2 when it goes GA
 |Podman |6.x |WSL machine, must be *rootful* for kind (CPU/RAM come from WSL, not Podman)
-|kind |0.32+ |`winget install Kubernetes.kind`
-|kubectl |matching the cluster |`winget install Kubernetes.kubectl`
-|argocd CLI |{argocd-version} |GitHub release page of argoproj/argo-cd
+|kind |0.32+ |`winget install -e --id Kubernetes.kind`
+|kubectl |matching the cluster |`winget install -e --id Kubernetes.kubectl`
+|argocd CLI |{argocd-version} |`winget install -e --id argoproj.argocd`
 |argo CLI |later, Phase 4 |Argo Workflows
 |kubectl-argo-rollouts |later, Phase 3 |Rollouts plugin
 |IntelliJ IDEA |any recent |open the repo root; `.idea/` is git-ignored
@@ -30,7 +30,9 @@ Then, once:
 
 [source,powershell]
 ----
-.\local\01-podman-rootful.ps1   # rootful machine + tool check
+.\local\00-prereqs.ps1 -Install   # installs kind, kubectl, argocd if missing
+.\local\00-prereqs.ps1            # verify: everything [ok]
+.\local\01-podman-rootful.ps1   # rootful machine
 .\local\02-create-cluster.ps1   # kind cluster "capa"
 .\local\03-install-argocd.ps1   # Argo CD, prints the admin password
 ----

@@ -9,7 +9,4 @@ podman machine start
 $rootless = podman info --format "{{.Host.Security.Rootless}}"
 podman info --format "rootless={{.Host.Security.Rootless}}  cgroup={{.Host.CgroupsVersion}}  cpus={{.Host.CPUs}}  mem={{.Host.MemTotal}}"
 if ($rootless -ne "false") { throw "machine is still rootless - kind will not work" }
-
-kind version
-kubectl version --client
-Write-Host "OK: rootful machine, ready for 02-create-cluster.ps1"
+Write-Host "OK: rootful machine. Next: 02-create-cluster.ps1"

@@ -1,5 +1,10 @@
 == Troubleshooting
 
+`kind` (or another tool) is not recognized::
+Install it with `.\local\00-prereqs.ps1 -Install`. If it is installed but still not found,
+the terminal has an old PATH: dot-source `local/env.ps1` again (it reloads PATH from the
+registry) or restart IntelliJ.
+
 kind cannot create the cluster::
 The Podman machine is rootless. Run `local/01-podman-rootful.ps1`, then check with
 `podman info --format "{{.Host.Security.Rootless}}"` (must be `false`).
