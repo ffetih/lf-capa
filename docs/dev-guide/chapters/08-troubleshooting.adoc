@@ -9,13 +9,20 @@ kind cannot create the cluster::
 The Podman machine is rootless. Run `local/01-podman-rootful.ps1`, then check with
 `podman info --format "{{.Host.Security.Rootless}}"` (must be `false`).
 
-https://localhost:30443 does not open::
-Rootful Podman on WSL has broken port publishing on this machine before.
-Try `kubectl -n argocd port-forward svc/argocd-server 8080:443` and open https://localhost:8080.
-
-`kubectl` cannot reach the API server::
-Check `podman port capa-control-plane`. Worst case run the CLIs inside the machine:
-`wsl -d podman-machine-default`.
+`kubectl` or https://localhost:30443 cannot connect ("actively refused")::
+Run `.\local\bridge.ps1` (always needed after a Podman machine or Windows restart).
++
+Why: with a *rootful* Podman machine on WSL, published ports are kernel redirect rules with no
+listening process, and WSL's localhost relay only forwards ports where a process is really
+listening. `bridge.ps1` starts the `capa-bridge` socat container on the VM's host network, which
+*is* a real listener, and forwards 6443 / 30443 / 30080 / 30746 to the kind node.
++
+[source,text]
+----
+Windows 127.0.0.1:6443 --(WSL relay)--> capa-bridge (socat) --> kind node :6443
+----
++
+Still failing: `.\local\diag-network.ps1` tests each hop separately.
 
 Pod stuck in `ErrImagePull` / `ImagePullBackOff`::
 The image was not loaded into kind, or the tag in `gitops/` does not match.

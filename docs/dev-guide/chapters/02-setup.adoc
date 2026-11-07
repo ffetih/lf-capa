@@ -33,9 +33,11 @@ Then, once:
 .\local\00-prereqs.ps1 -Install   # installs kind, kubectl, argocd if missing
 .\local\00-prereqs.ps1            # verify: everything [ok]
 .\local\01-podman-rootful.ps1   # rootful machine
-.\local\02-create-cluster.ps1   # kind cluster "capa"
+.\local\02-create-cluster.ps1   # kind cluster "capa" + Windows bridge
 .\local\03-install-argocd.ps1   # Argo CD, prints the admin password
 ----
+
+After a reboot (Windows or Podman machine), run `.\local\bridge.ps1` once.
 
 .Done when
 * [ ] `kubectl get nodes` shows one `Ready` node
