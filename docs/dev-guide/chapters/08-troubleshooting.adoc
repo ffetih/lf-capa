@@ -37,3 +37,8 @@ Machine needs more (or less) CPU / memory::
 On WSL, Podman cannot size the machine (`--cpus`/`--memory` are QEMU-only). Edit
 `%UserProfile%\.wslconfig` (`[wsl2]` section, `memory=` / `processors=`), then `wsl --shutdown`
 and `podman machine start`.
+
+`kubectl patch -p '{...}'` fails or does nothing in PowerShell::
+Windows PowerShell 5.1 strips inner double quotes when passing arguments to native programs,
+so inline JSON reaches `kubectl` broken. Put the patch in a file and use `--patch-file`
+(see `local/argocd-server-nodeport.yaml`).

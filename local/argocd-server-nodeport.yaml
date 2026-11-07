@@ -1,0 +1,7 @@
+# Strategic-merge patch: expose the Argo CD UI on NodePort 30443 (reached from Windows via capa-bridge).
+# Ports merge by "port", so the http/80 entry is kept.
+spec:
+  type: NodePort
+  ports:
+    - port: 443
+      nodePort: 30443
